@@ -30,6 +30,17 @@ public class MainActivity extends Activity {
     private int[][] modle_one;
     private int[][] modle_two;
     private int[][] modle_three;
+    private int[][][] modles = new int[][][]{
+            {
+                    {1, 1, 1}, {1, 1, 1}, {1, 1, 1}
+            },
+            {
+                    {1, 1, 1}, {1, 1, 1}, {1, 1, 1}
+            },
+            {
+                    {1, 1, 1}, {1, 1, 1}, {1, 1, 1}
+            }
+    };
     private int random[] = new int[]{0, 0, 0};
 
     @Override
@@ -77,6 +88,9 @@ public class MainActivity extends Activity {
                 modle_one = getModleType(random[0], modle_one);
                 modle_two = getModleType(random[1], modle_two);
                 modle_three = getModleType(random[2], modle_three);
+                modles[0] = modle_one;
+                modles[1] = modle_two;
+                modles[2] = modle_three;
                 count = 3;
             }
             int[][] test = new int[][]{{1, 0, 0}, {0, 0, 0}, {0, 0, 0}};
@@ -85,22 +99,12 @@ public class MainActivity extends Activity {
                 Log.e("hahaha", random[k] + "");
                 for (int i = 0; i < 3; i++) {
                     for (int j = 0; j < 3; j++) {
-                        if (k == 0) {
-                            if (modle_one[i][j] == 1) {
-                                RectF rectF = new RectF(modleX[k] + length * j, modleY[k] + length * i, modleX[k] + length * (j + 1) - 3, modleY[k] + length * (i + 1) - 3);
-                                canvas.drawRoundRect(rectF, 10, 10, paintCard);
-                            }
-                        } else if (k == 1) {
-                            if (modle_two[i][j] == 1) {
-                                RectF rectF = new RectF(modleX[k] + length * j, modleY[k] + length * i, modleX[k] + length * (j + 1) - 3, modleY[k] + length * (i + 1) - 3);
-                                canvas.drawRoundRect(rectF, 10, 10, paintCard);
-                            }
-                        } else if (k == 2) {
-                            if (modle_three[i][j] == 1) {
-                                RectF rectF = new RectF(modleX[k] + length * j, modleY[k] + length * i, modleX[k] + length * (j + 1) - 3, modleY[k] + length * (i + 1) - 3);
-                                canvas.drawRoundRect(rectF, 10, 10, paintCard);
-                            }
+
+                        if (modles[k][i][j] == 1) {
+                            RectF rectF = new RectF(modleX[k] + length * j, modleY[k] + length * i, modleX[k] + length * (j + 1) - 3, modleY[k] + length * (i + 1) - 3);
+                            canvas.drawRoundRect(rectF, 10, 10, paintCard);
                         }
+
                     }
                 }
             }
@@ -113,8 +117,10 @@ public class MainActivity extends Activity {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     modleMove = checkInWhichModle(x, y);
-                    preX = x;
-                    preY = y;
+                    if (modleMove != -1) {
+                        preX = x;
+                        preY = y;
+                    }
                     break;
                 case MotionEvent.ACTION_MOVE:
                     Log.e("test", modleMove + "");
@@ -138,97 +144,65 @@ public class MainActivity extends Activity {
                     }
                     break;
                 case MotionEvent.ACTION_UP:
-
-                    int changeX = (int) (modleX[modleMove] / length - 1 + 0.5f);
-                    int changeY = (int) ((modleY[modleMove] - startY) / length + 0.5f);
-                    boolean success = true;
-                    for (int i = 0; i < 3; i++) {
-                        for (int j = 0; j < 3; j++) {
-                            switch (modleMove) {
-                                case 0:
-                                    if (modle_one[i][j] == 1) {
-                                        if (changeX + i < 10 && changeY + j < 10) {
-                                            if (cards[changeX + i][changeY + j] > 0) {
-                                                success = false;
-                                            }
-                                        } else {
-                                            success =false;
-                                        }
-                                    }
-                                    break;
-                                case 1:
-                                    if (modle_two[i][j] == 1) {
-                                        if (changeX + i < 10 && changeY + j < 10) {
-                                            if (cards[changeX + i][changeY + j] > 0) {
-                                                success = false;
-                                            }
-                                        } else {
-                                            success =false;
-                                        }
-                                    }
-                                    break;
-                                case 2:
-                                    if (modle_three[i][j] == 1) {
-                                        if (changeX + i < 10 && changeY + j < 10) {
-                                            if (cards[changeX + i][changeY + j] > 0) {
-                                                success = false;
-                                            }
-                                        } else {
-                                            success =false;
-                                        }
-                                    }
-                                    break;
-                            }
-                        }
-                    }
-                    if (success) {
-                        Log.e("position", "成功了");
+                    if (modleMove!=-1) {
+                        int changeX = (int) (modleX[modleMove] / length - 1 + 0.5f);
+                        int changeY = (int) ((modleY[modleMove] - startY) / length + 0.5f);
+                        boolean success = true;
                         for (int i = 0; i < 3; i++) {
                             for (int j = 0; j < 3; j++) {
-                                switch (modleMove) {
-                                    case 0:
-                                        if (modle_one[i][j] == 1) {
-                                            if (changeX + i < 10 && changeY + j < 10) {
-                                                cards[changeX + j][changeY + i] = random[0];
-                                            }
+                                if (modles[modleMove][i][j] == 1) {
+                                    if (changeX + j < 10 && changeY + i < 10) {
+                                        if (cards[changeX + j][changeY + i] > 0) {
+                                            success = false;
                                         }
-                                        break;
-                                    case 1:
-                                        if (modle_two[i][j] == 1) {
-                                            if (changeX + i < 10 && changeY + j < 10) {
-                                                cards[changeX + j][changeY + i] = random[1];
-                                            }
+                                    } else {
+                                        success = false;
+                                    }
+                                }
+
+                            }
+                        }
+                        if (success) {
+                            Log.e("position", "成功了");
+                            for (int i = 0; i < 3; i++) {
+                                for (int j = 0; j < 3; j++) {
+                                    if (modles[modleMove][i][j] == 1) {
+                                        if (changeX + j < 10 && changeY + i < 10) {
+                                            cards[changeX + j][changeY + i] = random[modleMove];
                                         }
-                                        break;
-                                    case 2:
-                                        if (modle_three[i][j] == 1) {
-                                            if (changeX + i < 10 && changeY + j < 10) {
-                                                cards[changeX + j][changeY + i] = random[2];
-                                            }
-                                        }
-                                        break;
+                                    }
+
                                 }
                             }
-                        }
-                        for (int i = 0; i < 10; i++) {
-                            for (int j = 0; j < 10; j++) {
-                                temps[i][j] = cards[i][j];
+                            for (int i = 0; i < 10; i++) {
+                                for (int j = 0; j < 10; j++) {
+                                    temps[i][j] = cards[i][j];
+                                }
                             }
-                        }
-                        count--;
-                    } else {
-                        Log.e("position", "失败了");
-                        for (int i = 0; i < 10; i++) {
-                            for (int j = 0; j < 10; j++) {
-                                cards[i][j] = temps[i][j];
+                            for (int i = 0; i < 3; i++) {
+                                for (int j = 0; j < 3; j++) {
+                                    modles[modleMove][i][j] = 0;
+                                }
                             }
+
+                            count--;
+                           if (count==0){
+                             initPosition();
+                           }
+                        } else {
+                            Log.e("position", "失败了");
+                            for (int i = 0; i < 10; i++) {
+                                for (int j = 0; j < 10; j++) {
+                                    cards[i][j] = temps[i][j];
+                                }
+                            }
+                            modleX = modleXt;
+                            modleY = modleYt;
                         }
-                        modleX = modleXt;
-                        modleY = modleYt;
+
+
+                        modleMove = -1;
                     }
-
-
-                    modleMove = -1;
                     break;
             }
             invalidate();
@@ -328,6 +302,23 @@ public class MainActivity extends Activity {
             }
         }
 
+    }
+    private void initPosition(){
+        DisplayMetrics mDisplayMetrics = new DisplayMetrics();//屏幕分辨率容器
+        getWindowManager().getDefaultDisplay().getMetrics(mDisplayMetrics);
+        length = mDisplayMetrics.widthPixels / 12;
+        int width = mDisplayMetrics.widthPixels;
+        int height = mDisplayMetrics.heightPixels;
+        startX = length;
+        startY = height / 6;
+        modleX[0] = width / 6;
+        modleX[1] = width * 9 / 20;
+        modleX[2] = width * 3 / 4;
+        modleY[0] = height * 4 / 5;
+        modleY[1] = height * 4 / 5;
+        modleY[2] = height * 4 / 5;
+        modleXt = modleX;
+        modleYt = modleY;
     }
 
 
