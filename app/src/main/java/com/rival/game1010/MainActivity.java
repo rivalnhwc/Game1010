@@ -25,6 +25,8 @@ public class MainActivity extends Activity {
     private float startY;
     private float preX;
     private float preY;
+    private float width;
+    private float height;
     private int modleMove = -1;
     private int count = 0;
     private int[][] modle_one;
@@ -82,9 +84,9 @@ public class MainActivity extends Activity {
                 }
             }
             if (count == 0) {
-                random[0] = ((int) (Math.random() * 11)) % 4 + 1;
-                random[1] = ((int) (Math.random() * 12)) % 4 + 1;
-                random[2] = ((int) (Math.random() * 13)) % 4 + 1;
+                random[0] = ((int) (Math.random() * 11)) % 5 + 1;
+                random[1] = ((int) (Math.random() * 12)) % 5 + 1;
+                random[2] = ((int) (Math.random() * 13)) % 5 + 1;
                 modle_one = getModleType(random[0], modle_one);
                 modle_two = getModleType(random[1], modle_two);
                 modle_three = getModleType(random[2], modle_three);
@@ -186,6 +188,8 @@ public class MainActivity extends Activity {
                             }
 
                             count--;
+                            modleX[modleMove]=width;
+                            modleY[modleMove]=height;
                            if (count==0){
                              initPosition();
                            }
@@ -196,8 +200,8 @@ public class MainActivity extends Activity {
                                     cards[i][j] = temps[i][j];
                                 }
                             }
-                            modleX = modleXt;
-                            modleY = modleYt;
+                           modleX[modleMove] = modleXt[modleMove];
+                           modleY[modleMove] = modleYt[modleMove];
                         }
 
 
@@ -279,8 +283,8 @@ public class MainActivity extends Activity {
         DisplayMetrics mDisplayMetrics = new DisplayMetrics();//屏幕分辨率容器
         getWindowManager().getDefaultDisplay().getMetrics(mDisplayMetrics);
         length = mDisplayMetrics.widthPixels / 12;
-        int width = mDisplayMetrics.widthPixels;
-        int height = mDisplayMetrics.heightPixels;
+        width = mDisplayMetrics.widthPixels;
+        height = mDisplayMetrics.heightPixels;
         startX = length;
         startY = height / 6;
         modleX[0] = width / 6;
@@ -289,17 +293,16 @@ public class MainActivity extends Activity {
         modleY[0] = height * 4 / 5;
         modleY[1] = height * 4 / 5;
         modleY[2] = height * 4 / 5;
-        modleXt = modleX;
-        modleYt = modleY;
         for (int i = 0; i < 10; i++) {
-            for (int j = 0; j < 0; j++) {
+            for (int j = 0; j < 10; j++) {
                 cards[i][j] = 0;
-            }
-        }
-        for (int i = 0; i < 10; i++) {
-            for (int j = 0; j < 0; j++) {
                 temps[i][j] = 0;
             }
+        }
+
+        for (int i =0;i<3;i++){
+            modleXt[i]=modleX[i];
+            modleYt[i]=modleY[i];
         }
 
     }
@@ -317,8 +320,10 @@ public class MainActivity extends Activity {
         modleY[0] = height * 4 / 5;
         modleY[1] = height * 4 / 5;
         modleY[2] = height * 4 / 5;
-        modleXt = modleX;
-        modleYt = modleY;
+       for (int i =0;i<3;i++){
+           modleXt[i]=modleX[i];
+           modleYt[i]=modleY[i];
+       }
     }
 
 
