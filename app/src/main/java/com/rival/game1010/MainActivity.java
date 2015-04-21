@@ -8,7 +8,6 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
@@ -36,10 +35,13 @@ public class MainActivity extends Activity {
     private float preY;
     private float width;
     private float height;
-    private float narrowTimes= 0;
-    private final static float narrowTimesX=0.03f;
+    private float narrowTimes= 0.5f;
+    private final static float narrowTimesX=0.04f;
+    private final static float narrowTimesXY=0.04f;
     private int modleMove = -1;
     private int count = 0;
+    private int sourceX=0;
+    private int sourceY=0;
     private int[][] modle_one;
     private int[][] modle_two;
     private int[][] modle_three;
@@ -131,15 +133,21 @@ public class MainActivity extends Activity {
                     for (int j =0;j<10;j++){
                         if (eliminate[i][j]>0){
                            paintCard.setColor(findColor(eliminate[i][j]));
-                           RectF rectF = new RectF(startX + length * (i+narrowTimes), startY + length * (j+narrowTimes), startX + length * (i + 1-narrowTimes) - 3, startY + length * (j + 1-narrowTimes) - 3);
-                           canvas.drawRoundRect(rectF, 10, 10, paintCard);
+                           if (narrowTimes+narrowTimesXY*(Math.abs(sourceX-i)+Math.abs(sourceY-j))<0.5f) {
+                               float narrowTimesM = narrowTimes+narrowTimesXY*(Math.abs(sourceX-i)+Math.abs(sourceY-j));
+                               RectF rectF = new RectF(startX + length * (i - narrowTimesM+0.5f), startY + length * (j - narrowTimesM+0.5f), startX + length * (i + 0.5f+ narrowTimesM) - 3, startY + length * (j + 0.5f + narrowTimesM) - 3);
+                               canvas.drawRoundRect(rectF, 10, 10, paintCard);
+                           }else{
+                               RectF rectF = new RectF(startX + length * i, startY + length * j, startX + length * (i + 1) - 3, startY + length * (j + 1) - 3);
+                               canvas.drawRoundRect(rectF, 10, 10, paintCard);
+                           }
                         }
                     }
                 }
-                narrowTimes+=narrowTimesX;
-                if (narrowTimes>0.5f){
+                narrowTimes-=narrowTimesX;
+                if (narrowTimes<0){
                     shouldEliminate =false;
-                    narrowTimes=0;
+                    narrowTimes=0.5f;
                     for (int i=0;i<10;i++){
                         for (int j=0;j<10;j++){
                             eliminate[i][j]=0;
@@ -229,7 +237,8 @@ public class MainActivity extends Activity {
                             }
                         }
                         if (success) {
-                            Log.e("position", "成功了");
+                            sourceX =changeX;
+                            sourceY =changeY;
                             for (int i = 0; i < 3; i++) {
                                 for (int j = 0; j < 3; j++) {
                                     if (modles[modleMove][i][j] >0) {
